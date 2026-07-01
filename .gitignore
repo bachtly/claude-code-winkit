@@ -1,0 +1,11 @@
+# Logs / scratch
+*.log
+*.tmp
+
+# OS cruft
+Thumbs.db
+Desktop.ini
+
+# Editor
+.vscode/
+.idea/
