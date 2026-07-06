@@ -14,9 +14,12 @@ Claude Code ──[Notification hook]──> notify.ps1
                                           claudefocus:hwnd=<h>&tab=<title>
 
 user clicks toast ──> Windows launches the claudefocus: URL ──> focus.ps1
-                                       │  • SetForegroundWindow(hwnd)  (with AttachThreadInput
-                                       │    to beat the foreground lock)
-                                       └─ UI Automation selects the tab whose title matches
+                                       │  • UI Automation finds the tab whose title matches
+                                       │    across EVERY Windows Terminal window and selects it
+                                       │    (all WT windows share one process, so the embedded
+                                       │    hwnd alone can't tell them apart)
+                                       └─ raises that window to the foreground (AttachThreadInput
+                                          to beat the foreground lock). hwnd is a fallback only.
 ```
 
 Three pieces:
@@ -24,7 +27,7 @@ Three pieces:
 | File | Role |
 |------|------|
 | `notify.ps1` | Hook target. Sound + toast; embeds the window handle and tab title in the click link. |
-| `focus.ps1`  | Protocol target. Raises the window, then UI-Automation-selects the matching tab. |
+| `focus.ps1`  | Protocol target. UI-Automation-selects the matching tab across all WT windows, then raises that window (embedded hwnd is a fallback). |
 | `claudefocus:` protocol (HKCU) | Makes the toast clickable and routes the click to `focus.ps1`. |
 
 ## Install / uninstall
